@@ -1,4 +1,5 @@
-import { useState } from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -271,6 +272,27 @@ const Charge = () => {
     setModalAmount(amount);
   };
 
+  const charging = () => {
+    // 카드 잔액을 충전하기 위한 API 호출
+    axios
+      .get(
+        "http://127.0.0.1:8000/cards/add_balance/",
+        { new_balance: modalAmount }, // 충전할 금액을 요청 바디에 담아 보냅니다
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("충전 성공", response.data);
+        setIsOpen(false); // 충전 후 모달을 닫습니다
+      })
+      .catch((error) => {
+        console.error("충전 실패:", error);
+      });
+  };
+
   return (
     <Container>
       <BodyWrapper>
@@ -312,7 +334,7 @@ const Charge = () => {
                   height="84px"
                 />
               </Ad>
-              <Circle onClick={() => openModalHandler(10000)}>
+              <Circle onClick={() => openModalHandler(30000)}>
                 <CardImg>
                   <img
                     src={`${process.env.PUBLIC_URL}/images/charge.png`}
@@ -322,7 +344,7 @@ const Charge = () => {
                 </CardImg>
                 <AmountWrapper>
                   <Plus>+</Plus>
-                  <Amount>10,000</Amount>
+                  <Amount>30000</Amount>
                   <Won>원</Won>
                 </AmountWrapper>
               </Circle>
@@ -330,9 +352,19 @@ const Charge = () => {
                 <ModalBackdrop onClick={() => setIsOpen(false)}>
                   <ModalView onClick={(e) => e.stopPropagation()}>
                     <div className="desc">
-                      카드잔액 {modalAmount}원이 충전 되었습니다!
+                      카드잔액 {modalAmount}원이
+                      <br />
+                      충전 되었습니다!
                     </div>
-                    <ExitBtn onClick={() => setIsOpen(false)}>확인</ExitBtn>
+                    {/* <ExitBtn onClick={() => setIsOpen(false)}>확인</ExitBtn> */}
+                    <ExitBtn
+                      onClick={() => {
+                        setIsOpen(false);
+                        charging();
+                      }}
+                    >
+                      확인
+                    </ExitBtn>
                   </ModalView>
                 </ModalBackdrop>
               ) : null}
@@ -346,7 +378,7 @@ const Charge = () => {
                   height="84px"
                 />
               </Ad>
-              <Circle onClick={() => openModalHandler(20000)}>
+              <Circle onClick={() => openModalHandler(30000)}>
                 <CardImg>
                   <img
                     src={`${process.env.PUBLIC_URL}/images/charge.png`}
@@ -356,7 +388,7 @@ const Charge = () => {
                 </CardImg>
                 <AmountWrapper>
                   <Plus>+</Plus>
-                  <Amount>20,000</Amount>
+                  <Amount>30000</Amount>
                   <Won>원</Won>
                 </AmountWrapper>
               </Circle>
@@ -380,7 +412,7 @@ const Charge = () => {
                 </CardImg>
                 <AmountWrapper>
                   <Plus>+</Plus>
-                  <Amount>30,000</Amount>
+                  <Amount>30000</Amount>
                   <Won>원</Won>
                 </AmountWrapper>
               </Circle>
@@ -394,7 +426,7 @@ const Charge = () => {
                   height="84px"
                 />
               </Ad>
-              <Circle onClick={() => openModalHandler(40000)}>
+              <Circle onClick={() => openModalHandler(30000)}>
                 <CardImg>
                   <img
                     src={`${process.env.PUBLIC_URL}/images/charge.png`}
@@ -404,7 +436,7 @@ const Charge = () => {
                 </CardImg>
                 <AmountWrapper>
                   <Plus>+</Plus>
-                  <Amount>40,000</Amount>
+                  <Amount>30000</Amount>
                   <Won>원</Won>
                 </AmountWrapper>
               </Circle>
@@ -418,7 +450,7 @@ const Charge = () => {
                   height="84px"
                 />
               </Ad>
-              <Circle onClick={() => openModalHandler(50000)}>
+              <Circle onClick={() => openModalHandler(30000)}>
                 <CardImg>
                   <img
                     src={`${process.env.PUBLIC_URL}/images/charge.png`}
@@ -428,7 +460,7 @@ const Charge = () => {
                 </CardImg>
                 <AmountWrapper>
                   <Plus>+</Plus>
-                  <Amount>50,000</Amount>
+                  <Amount>30000</Amount>
                   <Won>원</Won>
                 </AmountWrapper>
               </Circle>

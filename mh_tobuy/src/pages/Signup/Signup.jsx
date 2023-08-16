@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const Container = styled.div`
   display: flex;
@@ -313,35 +314,45 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
 
-  const [day, setDay] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
-  const [name, setName] = useState("");
-  const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password_check, setPassword_check] = useState("");
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
 
-  const togglePasswordVisibility = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const onClick = () => {
+    // 사용자 입력 데이터를 서버로 전송하는 로직을 추가합니다.
+    const userData = {
+      email: email,
+      password: password,
+      password_check: password_check,
+      phone: phone,
+      name: name,
+    };
+
+    axios
+      .post("http://127.0.0.1:8000/api/signup/", userData)
+      .then((response) => {
+        console.log("회원가입 성공:", response.data);
+        navigate("/Login"); // 회원가입 성공 시 로그인 페이지로 이동하도록 설정
+      })
+      .catch((error) => {
+        console.error("회원가입 실패:", error);
+        // 오류 처리를 원하는 대로 구현하세요.
+      });
   };
 
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(
-      (prevShowConfirmPassword) => !prevShowConfirmPassword
-    );
-  };
-
-  const handlePasswordChange = (event) => {
-    const newPassword = event.target.value;
-    setPassword(newPassword);
-
-    if (confirmPassword !== newPassword) {
-      setPasswordMatch(false);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (password === confirmPassword) {
+      // 비밀번호 일치, 회원가입 로직 실행
+      console.log("회원가입 성공");
+      navigateToSignupcard();
     } else {
-      setPasswordMatch(true);
+      // 비밀번호 불일치
+      console.log("비밀번호가 일치하지 않습니다.");
     }
   };
 
@@ -356,17 +367,6 @@ const Signup = () => {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (password === confirmPassword) {
-      // 비밀번호 일치, 회원가입 로직 실행
-      console.log("회원가입 성공");
-      navigateToSignupcard();
-    } else {
-      // 비밀번호 불일치
-      console.log("비밀번호가 일치하지 않습니다.");
-    }
-  };
   const [isOpen, setIsOpen] = useState(false);
   //스크롤 방지
   useEffect(() => {
@@ -463,7 +463,7 @@ const Signup = () => {
             <Input
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
             />
           </InputBox>
@@ -471,8 +471,11 @@ const Signup = () => {
           <InputBox>
             <Input
               type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
+              value={password_check}
+              onChange={(e) => {
+                handleConfirmPasswordChange(e);
+                setPassword_check(e.target.value);
+              }}
               placeholder="비밀번호 재입력"
             />
           </InputBox>
@@ -486,7 +489,7 @@ const Signup = () => {
             <Input
               type="text"
               placeholder="이름"
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
           </InputBox>
           <InputBox>
@@ -500,7 +503,7 @@ const Signup = () => {
             <GrayBox onClick={navigateToFirstpage}>
               <Graytext>처음으로</Graytext>
             </GrayBox>
-            <RedBox type="submit" onClick={handleSubmit}>
+            <RedBox onClick={onClick}>
               <Redtext>확인</Redtext>
             </RedBox>
           </ButtonContainer>

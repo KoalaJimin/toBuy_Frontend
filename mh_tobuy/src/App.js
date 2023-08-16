@@ -54,12 +54,18 @@ function App() {
           <Route path="/PayHistory" element={<PayHistory />} />
           <Route path="/Charge" element={<Charge />} />
           <Route path="/PlayVideo" element={<PlayVideo />} />
-          <Route path="/ProductDetail" element={<ProductDetail />} />
+          {/* <Route path="/ProductDetail" element={<ProductDetail />} /> */}
           <Route path="/Payment" element={<Payment />} />
           <Route path="/Main" element={<Main />} />
           <Route path="/FailSearch" element={<FailSearch />} />
-          <Route path="/SuccessSearch" element={<SuccessSearch />} />
+          {/* <Route path="/SuccessSearch" element={<SuccessSearch />} /> */}
+          <Route path="/products" element={<SuccessSearch />} />;
           <Route path="/Complete" element={<Complete />} />
+          {/* <Route path="/Detail" element={<Detail />} /> */}
+          <Route
+            path="/products/:category/:productId/"
+            element={<ProductDetail />}
+          />
         </Routes>
       </div>
     </BrowserRouter>
