@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const Container = styled.div`
   display: flex;
@@ -628,6 +629,19 @@ const MypageMain = () => {
     navigate("/MypageMain");
   };
 
+  const onClicklogout = () => {
+    axios
+      .post("http://127.0.0.1:8000/api/logout/")
+      .then((response) => {
+        console.log("로그아웃 성공:", response.data);
+        localStorage.removeItem("access_token");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("로그아웃 실패:", error);
+      });
+  };
+
   return (
     <Container>
       <BodyWrapper>
@@ -664,7 +678,7 @@ const MypageMain = () => {
                 height="100px"
               ></ProFileImg>
               <ProFileName>000 님</ProFileName>
-              <Logout onClick={navigateToFirstpage}>로그아웃</Logout>
+              <Logout onClick={onClicklogout}>로그아웃</Logout>
             </ProfileContent>
           </Profile>
 

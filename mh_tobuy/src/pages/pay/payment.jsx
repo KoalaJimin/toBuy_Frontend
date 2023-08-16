@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -76,16 +78,18 @@ const ProductWrapper = styled.div`
   margin-right: 3%;
   margin-top: 22px;
 `;
-const ProductImg = styled.div``;
+const ProductImg = styled.div`
+  margin-top: 2px;
+`;
 const ProductInfoWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   align-content: center;
   justify-content: center;
-  margin-left: 9px;
+  margin-left: 12px;
   width: 70%;
-  margin-bottom: 9px;
+  // margin-bottom: 9px;
 `;
 const ProductName = styled.div`
   color: #000;
@@ -93,8 +97,9 @@ const ProductName = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  width: 80px;
-  margin-right: auto;
+  width: 256px;
+  // margin-right: auto;
+  text-align: left;
 `;
 const PriceWrapper = styled.div`
 color: #000;
@@ -103,14 +108,16 @@ color: #000;
     font-weight: 500;
     line-height: normal;
     text-align: left;
-    margin-left: auto;
+    margin-right: auto;
+    
+  margin-top: 3px;
 }`;
 const Price = styled.span``;
 const Won = styled.span``;
 const TotalWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  height: 65px;
+  height: 60px;
   align-items: center;
   padding: 0 18px;
   color: #000;
@@ -130,6 +137,19 @@ const Whole = styled.span``;
 const Quantity = styled.span``;
 const Count = styled.span``;
 const TotalPrice = styled.span``;
+
+const TotalPrice2 = styled.span`
+  margin-left: 160px;
+`;
+
+const PriceWrapper2 = styled.div`
+color: #000;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: left;
+}`;
 
 const Gra = styled.div`
   position: relative;
@@ -319,12 +339,12 @@ const Cardinfo = styled.div`
   margin-left: 20px;
   margin-bottom: 11px;
 `;
-const Submit = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 42px;
-`;
+// const Submit = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   margin-top: 42px;
+// `;
 const CoachMark = styled.div`
   position: fixed;
   bottom: 80px;
@@ -486,6 +506,18 @@ const CardWrapper = styled.div`
   padding-bottom: 14px;
 `;
 
+const Submit = styled.button`
+  width: 222px;
+  height: 53px;
+  padding: 10px;
+  border-radius: 6px;
+  background: #05bba2;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  border: none;
+  color: white;
+  margin-top: 10px;
+`;
+
 const CardImg = styled.div``;
 
 const MCardinfoWrapper = styled.div`
@@ -564,16 +596,6 @@ const Payment = () => {
     top: "-5px",
     left: "62px",
   };
-  const submitStyle = {
-    width: "222px",
-    height: "53px",
-    padding: "10px",
-    borderRadius: "6px",
-    background: "#05BBA2",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    border: "none",
-    color: "white",
-  };
   const NoneStyle = {
     color: "#E22D11",
     fontFamily: "S-Core Dream",
@@ -630,6 +652,27 @@ const Payment = () => {
     navigate("/MypageMain");
   };
 
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const productName = queryParams.get("productName");
+  const unitPrice = queryParams.get("unitPrice");
+  const quantity = queryParams.get("quantity");
+  const imagePath = queryParams.get("imagePath");
+
+  // 총 가격 계산
+  const totalPrice = unitPrice * quantity;
+
+  const pay = () => {
+    const queryParams = new URLSearchParams();
+    queryParams.append("productName", productName);
+    queryParams.append("unitPrice", unitPrice);
+    queryParams.append("quantity", quantity);
+    queryParams.append("imagePath", imagePath);
+
+    // URL 쿼리 파라미터로 데이터를 전달하면서 페이지 이동
+    navigate(`/Complete?${queryParams.toString()}`);
+  };
+
   return (
     <Container>
       <BodyWrapper>
@@ -661,15 +704,15 @@ const Payment = () => {
           <ProductWrapper>
             <ProductImg>
               <img
-                src={`${process.env.PUBLIC_URL}/images/productSample.png`}
+                src={`http://127.0.0.1:8000${imagePath}`}
+                alt={productName}
                 width="70px"
-                height="70px"
-              ></img>
+              />
             </ProductImg>
             <ProductInfoWrapper>
-              <ProductName>상품명</ProductName>
+              <ProductName>{productName}</ProductName>
               <PriceWrapper>
-                <Price>00,000</Price>
+                <Price>{unitPrice}</Price>
                 <Won> 원</Won>
               </PriceWrapper>
             </ProductInfoWrapper>
@@ -678,14 +721,14 @@ const Payment = () => {
           <TotalWrapper>
             <QuantityWrapper>
               <Whole>총 </Whole>
-              <Quantity>N</Quantity>
+              <Quantity>{quantity}</Quantity>
               <Count> 개</Count>
             </QuantityWrapper>
-            <PriceWrapper>
+            <PriceWrapper2>
               <Whole>총 </Whole>
-              <TotalPrice>00,000</TotalPrice>
+              <TotalPrice>{totalPrice}</TotalPrice>
               <Won> 원</Won>
-            </PriceWrapper>
+            </PriceWrapper2>
           </TotalWrapper>
           <Gra></Gra>
           <HowHeader>
@@ -915,15 +958,11 @@ const Payment = () => {
             <TotalWrapper>
               <Whole>총 결제금액</Whole>
               <PriceWrapper>
-                <TotalPrice>00,000</TotalPrice>
+                <TotalPrice2>{totalPrice}</TotalPrice2>
                 <Won> 원</Won>
               </PriceWrapper>
             </TotalWrapper>
-            <Submit onClick={navigateToHome}>
-              <button formAction="" style={submitStyle}>
-                결제하기
-              </button>
-            </Submit>
+            <Submit onClick={pay}>결제하기</Submit>
           </form>
           <CoachMark>
             <img
