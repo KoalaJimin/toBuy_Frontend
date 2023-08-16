@@ -267,17 +267,20 @@ const Charge = () => {
   const goMyPage = () => {
     navigate("/MypageMain");
   };
-  const openModalHandler = (amount) => {
+  const openModalHandler = () => {
     setIsOpen(!isOpen);
-    setModalAmount(amount);
   };
-
+  const [card, setCard] = useState({
+    balance: "",
+  });
   const charging = () => {
     // 카드 잔액을 충전하기 위한 API 호출
     axios
-      .get(
-        "http://127.0.0.1:8000/cards/add_balance/",
-        { new_balance: modalAmount }, // 충전할 금액을 요청 바디에 담아 보냅니다
+      .post(
+        "http://127.0.0.1:8000/cards/recharge/",
+        {
+          message: "Balance added successfully",
+        }, // 충전할 금액을 요청 바디에 담아 보냅니다
         {
           headers: {
             Authorization: `Token ${localStorage.getItem("access_token")}`,
@@ -290,7 +293,31 @@ const Charge = () => {
       })
       .catch((error) => {
         console.error("충전 실패:", error);
+        console.log("충전 실패 시 데이터:", {
+          balance: balance,
+          message: "Balance added successfully",
+          recharge_amount: 30000,
+        });
       });
+  };
+  const [balance, setBalance] = useState(0);
+  const getBalance = async () => {
+    console.log("함수실행됨");
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/cards/", {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("access_token")}`,
+        },
+      });
+
+      if (response.data.length > 0) {
+        // 응답 데이터가 존재하는 경우에만
+        const receivedBalance = response.data[0].balance; // 응답 데이터에서 잔액 정보를 가져옴
+        setBalance(receivedBalance); // 상태 업데이트
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+    }
   };
 
   return (
@@ -334,7 +361,13 @@ const Charge = () => {
                   height="84px"
                 />
               </Ad>
-              <Circle onClick={() => openModalHandler(30000)}>
+
+              <Circle
+                onClick={() => {
+                  openModalHandler();
+                  getBalance();
+                }}
+              >
                 <CardImg>
                   <img
                     src={`${process.env.PUBLIC_URL}/images/charge.png`}
@@ -349,10 +382,14 @@ const Charge = () => {
                 </AmountWrapper>
               </Circle>
               {isOpen ? (
-                <ModalBackdrop onClick={() => setIsOpen(false)}>
+                <ModalBackdrop
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
                   <ModalView onClick={(e) => e.stopPropagation()}>
                     <div className="desc">
-                      카드잔액 {modalAmount}원이
+                      카드잔액 {balance}원이
                       <br />
                       충전 되었습니다!
                     </div>
